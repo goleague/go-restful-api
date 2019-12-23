@@ -5,6 +5,9 @@ language: go
 go:
   - 1.13.x
 
+services:
+  - postgresql
+
 install:
   - go get golang.org/x/tools/cmd/cover
   - go get github.com/mattn/goveralls
