@@ -12,11 +12,6 @@ ARG MIGRATE_VERSION=4.7.1
 ADD https://github.com/golang-migrate/migrate/releases/download/v${MIGRATE_VERSION}/migrate.linux-amd64.tar.gz /tmp
 RUN tar -xzf /tmp/migrate.linux-amd64.tar.gz -C /usr/local/bin && mv /usr/local/bin/migrate.linux-amd64 /usr/local/bin/migrate
 
-ENV http_proxy=http://entproxy.kdc.capitalone.com:8099
-ENV https_proxy=http://entproxy.kdc.capitalone.com:8099
-ENV HTTP_PROXY=http://entproxy.kdc.capitalone.com:8099
-ENV HTTPS_PROXY=http://entproxy.kdc.capitalone.com:8099
-
 WORKDIR /app
 
 # copy module files first so that they don't need to be downloaded again if no change
