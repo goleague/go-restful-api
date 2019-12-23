@@ -1,8 +1,6 @@
 # Go RESTful API Starter Kit (Boilerplate)
 
 [![Build Status](https://github.com/qiangxue/go-restful-api/workflows/build/badge.svg)](https://github.com/goseal/go-restful-api/actions?query=workflow%3Abuild)
-
-[![Build Status](https://travis-ci.org/qiangxue/go-restful-api.svg?branch=master)](https://travis-ci.org/qiangxue/go-restful-api)
 [![Coverage Status](https://coveralls.io/repos/github/qiangxue/go-restful-api/badge.svg?branch=master)](https://coveralls.io/github/qiangxue/go-restful-api?branch=master)
 [![Go Report](https://goreportcard.com/badge/github.com/qiangxue/go-restful-api)](https://goreportcard.com/report/github.com/qiangxue/go-restful-api)
 
