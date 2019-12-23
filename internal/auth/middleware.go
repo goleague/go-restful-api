@@ -6,6 +6,7 @@ import (
 	routing "github.com/go-ozzo/ozzo-routing/v2"
 	"github.com/go-ozzo/ozzo-routing/v2/auth"
 	"github.com/qiangxue/go-restful-api/internal/entity"
+	"github.com/qiangxue/go-restful-api/internal/errors"
 	"net/http"
 )
 
@@ -51,7 +52,7 @@ func CurrentUser(ctx context.Context) Identity {
 // It fails the authentication otherwise.
 func MockAuthHandler(c *routing.Context) error {
 	if c.Request.Header.Get("Authorization") != "TEST" {
-		return routing.NewHTTPError(http.StatusUnauthorized)
+		return errors.Unauthorized("")
 	}
 	ctx := WithUser(c.Request.Context(), "100", "Tester")
 	c.Request = c.Request.WithContext(ctx)

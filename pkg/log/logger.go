@@ -2,11 +2,14 @@ package log
 
 import (
 	"context"
+	"database/sql"
+	dbx "github.com/go-ozzo/ozzo-dbx"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"go.uber.org/zap/zaptest/observer"
 	"net/http"
+	"time"
 )
 
 // Logger is a logger that supports log levels, context and structured logging.
@@ -100,4 +103,26 @@ func getCorrelationID(req *http.Request) string {
 // getRequestID extracts the correlation ID from the HTTP request
 func getRequestID(req *http.Request) string {
 	return req.Header.Get("X-Request-ID")
+}
+
+// DBQuery returns a logging function that can be used to log SQL queries.
+func DBQuery(logger Logger) dbx.QueryLogFunc {
+	return func(ctx context.Context, t time.Duration, sql string, rows *sql.Rows, err error) {
+		if err == nil {
+			logger.With(ctx, "duration", t.Milliseconds(), "sql", sql).Info("DB query successful")
+		} else {
+			logger.With(ctx, "sql", sql).Errorf("DB query error: %v", err)
+		}
+	}
+}
+
+// DBExec returns a logging function that can be used to log SQL executions.
+func DBExec(logger Logger) dbx.ExecLogFunc {
+	return func(ctx context.Context, t time.Duration, sql string, result sql.Result, err error) {
+		if err == nil {
+			logger.With(ctx, "duration", t.Milliseconds(), "sql", sql).Info("DB execution successful")
+		} else {
+			logger.With(ctx, "sql", sql).Errorf("DB execution error: %v", err)
+		}
+	}
 }

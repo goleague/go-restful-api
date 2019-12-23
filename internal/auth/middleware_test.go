@@ -42,3 +42,13 @@ func Test_handleToken(t *testing.T) {
 		assert.Equal(t, "test", identity.GetName())
 	}
 }
+
+func TestMocks(t *testing.T) {
+	req, _ := http.NewRequest("GET", "http://example.com", nil)
+	ctx, _ := test.MockRoutingContext(req)
+	assert.NotNil(t, MockAuthHandler(ctx))
+	req.Header = MockAuthHeader()
+	ctx, _ = test.MockRoutingContext(req)
+	assert.Nil(t, MockAuthHandler(ctx))
+	assert.NotNil(t, CurrentUser(ctx.Request.Context()))
+}

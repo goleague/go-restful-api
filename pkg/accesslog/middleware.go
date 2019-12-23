@@ -1,7 +1,6 @@
 package accesslog
 
 import (
-	"fmt"
 	routing "github.com/go-ozzo/ozzo-routing/v2"
 	"github.com/go-ozzo/ozzo-routing/v2/access"
 	"github.com/qiangxue/go-restful-api/pkg/log"
@@ -26,8 +25,7 @@ func Handler(logger log.Logger) routing.Handler {
 		err := c.Next()
 
 		// generate an access log message
-		elapsed := float64(time.Now().Sub(start).Nanoseconds()) / 1e6
-		logger.With(ctx, "duration", fmt.Sprintf("%.3fms", elapsed), "status", rw.Status).
+		logger.With(ctx, "duration", time.Now().Sub(start).Milliseconds(), "status", rw.Status).
 			Infof("%s %s %s %d %d", c.Request.Method, c.Request.URL.Path, c.Request.Proto, rw.Status, rw.BytesWritten)
 
 		return err

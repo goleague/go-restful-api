@@ -46,7 +46,8 @@ func main() {
 		logger.Error(err)
 		os.Exit(-1)
 	}
-	db.LogFunc = logger.Infof
+	db.QueryLogFunc = log.DBQuery(logger)
+	db.ExecLogFunc = log.DBExec(logger)
 	defer func() {
 		if err := db.Close(); err != nil {
 			logger.Error(err)
