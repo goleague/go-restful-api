@@ -1,12 +1,11 @@
 # Go RESTful API Starter Kit (Boilerplate)
 
-[![GoDoc](https://godoc.org/github.com/qiangxue/go-restful-api?status.png)](http://godoc.org/github.com/qiangxue/go-restful-api)
 [![Build Status](https://travis-ci.org/qiangxue/go-restful-api.svg?branch=master)](https://travis-ci.org/qiangxue/go-restful-api)
 [![Coverage Status](https://coveralls.io/repos/github/qiangxue/go-restful-api/badge.svg?branch=master)](https://coveralls.io/github/qiangxue/go-restful-api?branch=master)
 [![Go Report](https://goreportcard.com/badge/github.com/qiangxue/go-restful-api)](https://goreportcard.com/report/github.com/qiangxue/go-restful-api)
 
 This starter kit is designed to get you up and running with a project structure optimized for developing
-RESTful API services in Go. It promotes the best practices that follow the [SOLID principles](https://en.wikipedia.org/wiki/SOLID_(object-oriented_design)
+RESTful API services in Go. It promotes the best practices that follow the [SOLID principles](https://en.wikipedia.org/wiki/SOLID)
 and [clean architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html). 
 It encourages writing clean and idiomatic Go code. 
 
