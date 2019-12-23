@@ -1,23 +1,24 @@
-# Go RESTful Application Starter Kit
+# Go RESTful API Starter Kit (Boilerplate)
 
-[![GoDoc](https://godoc.org/github.com/qiangxue/golang-restful-starter-kit?status.png)](http://godoc.org/github.com/qiangxue/golang-restful-starter-kit)
-[![Build Status](https://travis-ci.org/qiangxue/golang-restful-starter-kit.svg?branch=master)](https://travis-ci.org/qiangxue/golang-restful-starter-kit)
-[![Coverage Status](https://coveralls.io/repos/github/qiangxue/golang-restful-starter-kit/badge.svg?branch=master)](https://coveralls.io/github/qiangxue/golang-restful-starter-kit?branch=master)
-[![Go Report](https://goreportcard.com/badge/github.com/qiangxue/golang-restful-starter-kit)](https://goreportcard.com/report/github.com/qiangxue/golang-restful-starter-kit)
+[![GoDoc](https://godoc.org/github.com/qiangxue/go-restful-api?status.png)](http://godoc.org/github.com/qiangxue/go-restful-api)
+[![Build Status](https://travis-ci.org/qiangxue/go-restful-api.svg?branch=master)](https://travis-ci.org/qiangxue/go-restful-api)
+[![Coverage Status](https://coveralls.io/repos/github/qiangxue/go-restful-api/badge.svg?branch=master)](https://coveralls.io/github/qiangxue/go-restful-api?branch=master)
+[![Go Report](https://goreportcard.com/badge/github.com/qiangxue/go-restful-api)](https://goreportcard.com/report/github.com/qiangxue/go-restful-api)
 
-This starter kit is designed to get you up and running with a project structure optimal for developing
-RESTful services in Go. The kit promotes the best practices that follow the [SOLID principles](https://en.wikipedia.org/wiki/SOLID_(object-oriented_design))
-and encourage writing clear and idiomatic Go code. 
+This starter kit is designed to get you up and running with a project structure optimized for developing
+RESTful API services in Go. It promotes the best practices that follow the [SOLID principles](https://en.wikipedia.org/wiki/SOLID_(object-oriented_design)
+and [clean architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html). 
+It encourages writing clean and idiomatic Go code. 
 
-The kit provides the following features right out of the box 
+The kit provides the following features right out of the box:
 
 * RESTful endpoints in the widely accepted format
 * Standard CRUD operations of a database table
 * JWT-based authentication
-* Application configuration via environment variable and configuration file
+* Environment dependent application configuration management
 * Structured logging with contextual information
-* Panic handling and proper error response generation
-* Automatic DB transaction handling
+* Error handling with proper error response generation
+* Database migration
 * Data validation
 * Full test coverage
  
@@ -27,146 +28,161 @@ since their usages are mostly localized and abstracted.
 * Routing framework: [ozzo-routing](https://github.com/go-ozzo/ozzo-routing)
 * Database: [ozzo-dbx](https://github.com/go-ozzo/ozzo-dbx)
 * Data validation: [ozzo-validation](https://github.com/go-ozzo/ozzo-validation)
-* Logging: [logrus](https://github.com/Sirupsen/logrus)
-* Configuration: [viper](https://github.com/spf13/viper)
-* Dependency management: [dep](https://github.com/golang/dep)
+* Logging: [zap](https://github.com/uber-go/zap)
 * Testing: [testify](https://github.com/stretchr/testify)
-
+* JWT: [jwt-go](https://github.com/dgrijalva/jwt-go)
+* Database migration: [golang-migrate](https://github.com/golang-migrate/migrate)
 
 ## Getting Started
 
 If this is your first time encountering Go, please follow [the instructions](https://golang.org/doc/install) to
-install Go on your computer. The kit requires Go 1.5 or above.
+install Go on your computer. The kit requires Go 1.13 or above.
 
-After installing Go, run the following commands to download and install this starter kit:
+[Docker](https://www.docker.com/get-started) is also needed if you want to try the kit without setting up your
+own database server.
 
-```shell
-# install the starter kit
-go get github.com/qiangxue/golang-restful-starter-kit
-
-# install dep
-$ curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
-
-# fetch the dependent packages
-cd $GOPATH/qiangxue/golang-restful-starter-kit
-dep ensure
-```
-
-Next, create a PostgreSQL database named `go_restful` and execute the SQL statements given in the file `testdata/db.sql`.
-The starter kit uses the following default database connection information:
-* server address: `127.0.0.1` (local machine)
-* server port: `5432`
-* database name: `go_restful`
-* username: `postgres`
-* password: `postgres`
-
-If your connection is different from the above, you may modify the configuration file `config/app.yaml`, or
-define an environment variable named `RESTFUL_DSN` like the following:
-
-```
-postgres://<username>:<password>@<server-address>:<server-port>/<db-name>
-```
-
-For more details about specifying a PostgreSQL DSN, please refer to [the documentation](https://godoc.org/github.com/lib/pq).
-
-Now you can build and run the application by running the following command under the
-`$GOPATH/qiangxue/golang-restful-starter-kit` directory:
+After installing Go and Docker, run the following commands to start experiencing this starter kit:
 
 ```shell
-go run server.go
+# download the starter kit
+go get github.com/qiangxue/go-restful-api
+
+cd go-restful-api
+
+# start a PostgreSQL database server in a Docker container
+make db-start
+
+# seed the database with some test data
+make testdata
+
+# run the RESTful API server
+make run
 ```
 
-or simply the following if you have the `make` tool:
+At this time, you have a RESTful API server running at `http://127.0.0.1:8080`. It provides the following endpoints:
+
+* `GET /healthcheck`: a healthcheck service provided for health checking purpose (needed when implementing a server cluster)
+* `POST /v1/login`: authenticates a user and generates a JWT
+* `GET /v1/albums`: returns a paginated list of the albums
+* `GET /v1/albums/:id`: returns the detailed information of an album
+* `POST /v1/albums`: creates a new album
+* `PUT /v1/albums/:id`: updates an existing album
+* `DELETE /v1/albums/:id`: deletes an album
+
+Try the URL `http://localhost:8080/healthcheck` in a browser, and you should see something like `"OK v1.0.0"` displayed.
+
+If you have `cURL` or some API client tools (e.g. [Postman](https://www.getpostman.com/)), you may try the following 
+more complex scenarios:
 
 ```shell
-make
-```
-
-The application runs as an HTTP server at port 8080. It provides the following RESTful endpoints:
-
-* `GET /ping`: a ping service mainly provided for health check purpose
-* `POST /v1/auth`: authenticate a user
-* `GET /v1/artists`: returns a paginated list of the artists
-* `GET /v1/artists/:id`: returns the detailed information of an artist
-* `POST /v1/artists`: creates a new artist
-* `PUT /v1/artists/:id`: updates an existing artist
-* `DELETE /v1/artists/:id`: deletes an artist
-
-For example, if you access the URL `http://localhost:8080/ping` in a browser, you should see the browser
-displays something like `OK v0.1#bc41dce`.
-
-If you have `cURL` or some API client tools (e.g. Postman), you may try the following more complex scenarios:
-
-```shell
-# authenticate the user via: POST /v1/auth
-curl -X POST -H "Content-Type: application/json" -d '{"username": "demo", "password": "pass"}' http://localhost:8080/v1/auth
+# authenticate the user via: POST /v1/login
+curl -X POST -H "Content-Type: application/json" -d '{"username": "demo", "password": "pass"}' http://localhost:8080/v1/login
 # should return a JWT token like: {"token":"...JWT token here..."}
 
-# with the above JWT token, access the artist resources, such as: GET /v1/artists
-curl -X GET -H "Authorization: Bearer ...JWT token here..." http://localhost:8080/v1/artists
-# should return a list of artist records in the JSON format
+# with the above JWT token, access the album resources, such as: GET /v1/albums
+curl -X GET -H "Authorization: Bearer ...JWT token here..." http://localhost:8080/v1/albums
+# should return a list of album records in the JSON format
 ```
 
-## Next Steps
+To use the starter kit as a starting point of a real project whose package name is `github.com/abc/xyz`, do a global 
+replacement of the string `github.com/qiangxue/go-restful-api` in all of project files with the string `github.com/abc/xyz`.
 
-In this section, we will describe the steps you may take to make use of this starter kit in a real project.
-You may jump to the [Project Structure](#project-structure) section if you mainly want to learn about 
-the project structure and the recommended practices.
 
-### Renaming the Project
+## Project Layout
 
-To use the starter kit as a starting point of a real project whose package name is something like
-`github.com/abc/xyz`, take the following steps:
+The starter kit uses the following project layout:
  
-* move the directory `$GOPATH/github.com/qiangxue/golang-restful-starter-kit` to `$GOPATH/github.com/abc/xyz`
-* do a global replacement of the string `github.com/qiangxue/golang-restful-starter-kit` in all of
-  project files with the string `github.com/abc/xyz`
+```
+.
+├── cmd                  main applications of the project
+│   └── server           the API server application
+├── config               configuration files for different environments
+├── internal             private application and library code
+│   ├── album            album-related features
+│   ├── auth             authentication feature
+│   ├── config           configuration library
+│   ├── entity           entity definitions and domain logic
+│   ├── errors           error types and handling
+│   ├── healthcheck      healthcheck feature
+│   └── test             helpers for testing purpose
+├── migrations           database migrations
+├── pkg                  public library code
+│   ├── accesslog        access log middleware
+│   ├── graceful         graceful shutdown of HTTP server
+│   ├── log              structured and context-aware logger
+│   └── pagination       paginated list
+└── testdata             test data scripts
+```
 
-### Implementing CRUD of Another Table
- 
-To implement the CRUD APIs of another database table (assuming it is named as `album`), 
-you will need to develop the following files which are similar to the `artist.go` file in each folder:
+The top level directories `cmd`, `internal`, `pkg` are commonly found in other popular Go projects, as explained in
+[Standard Go Project Layout](https://github.com/golang-standards/project-layout).
 
-* `models/album.go`: contains the data structure representing a row in the new table.
-* `services/album.go`: contains the business logic that implements the CRUD operations.
-* `daos/album.go`: contains the DAO (Data Access Object) layer that interacts with the database table.
-* `apis/album.go`: contains the API layer that wires up the HTTP routes with the corresponding service APIs.
+Within `internal` and `pkg`, packages are structured by features in order to achieve the so-called
+[screaming architecture](https://blog.cleancoder.com/uncle-bob/2011/09/30/Screaming-Architecture.html). For example, 
+the `album` directory contains the application logic related with the album feature. 
 
-Then, wire them up by modifying the `serveResources()` function in the `server.go` file.
+Within each feature package, code are organized in layers (API, service, repository), following the dependency guidelines
+as described in the [clean architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html).
 
-### Implementing a non-CRUD API
 
-* If the API uses a request/response structure that is different from a database model,
-  define the request/response model(s) in the `models` package.
-* In the `services` package create a service type that should contain the main service logic for the API.
-  If the service logic is very complex or there are multiple related APIs, you may create
-  a package under `services` to host them.
-* If the API needs to interact with the database or other persistent storage, create
-  a DAO type in the `daos` package. Otherwise, the DAO type can be skipped.
-* In the `apis` package, define the HTTP route and the corresponding API handler.
-* Finally, modify the `serveResources()` function in the `server.go` file to wire up the new API.
+## Common Development Tasks
 
-## Project Structure
+This section describes some common development tasks using this starter kit.
 
-This starter kit divides the whole project into four main packages:
+### Implementing a New Feature
 
-* `models`: contains the data structures used for communication between different layers.
-* `services`: contains the main business logic of the application.
-* `daos`: contains the DAO (Data Access Object) layer that interacts with persistent storage.
-* `apis`: contains the API layer that wires up the HTTP routes with the corresponding service APIs.
+Implementing a new feature typically involves the following steps:
 
-[Dependency inversion principle](https://en.wikipedia.org/wiki/Dependency_inversion_principle)
-is followed to make these packages independent of each other and thus easier to test and maintain.
+1. Develop the service that implements the business logic supporting the feature. Please refer to `internal/album/service.go` as an example.
+2. Develop the RESTful API exposing the service about the feature. Please refer to `internal/album/api.go` as an example.
+3. Develop the repository that persists the data entities needed by the service. Please refer to `internal/album/repsitory.go` as an example.
+4. Wire up the above components together by injecting their dependencies in the main function. Please refer to 
+   the `album.RegisterHandlers()` call in `cmd/server/main.go`.
 
-The rest of the packages in the kit are used globally:
- 
-* `app`: contains routing middlewares and application-level configurations
-* `errors`: contains error representation and handling
-* `util`: contains utility code
+### Updating Database Schema
 
-The main entry of the application is in the `server.go` file. It does the following work:
+The starter kit uses [database migration](https://en.wikipedia.org/wiki/Schema_migration) to manage the changes of the 
+database schema over the whole project development phase. The following commands are commonly used with regard to database
+schema changes:
 
-* load external configuration
-* establish database connection
-* instantiate components and inject dependencies
-* start the HTTP server
+```shell
+# Execute new migrations made by you or other team members.
+make migrate
+
+# Create a new database migration.
+# In the generated `migrations/*.up.sql` file, write the SQL statements that implement the schema changes.
+# In the `*.down.sql` file, write the SQL statements that revert the schema changes.
+make migrate-new
+
+# Revert the last database migration.
+# This is often used when a migration has some issues and needs to be reverted.
+make migrate-down
+
+# Clean up the database and rerun the migrations from the very beginning.
+# Note that this command will first erase all data and tables in the database, and then
+# run all migrations. 
+make migrate-reset
+```
+
+### Managing Configurations
+
+The application configuration is represented in `internal/config/config.go`. When the application starts,
+it loads the configuration from a configuration file and environment variables. The path to the configuration 
+file is specified via the `-config` command line argument, while the environment variables should be named 
+with `APP_` prefix. 
+
+The `config` directory contains the configuration files named after different environments. For example,
+`config/local.yml` corresponds to local development environment and is used when running the application 
+via `make run`.
+
+Do not keep secrets in the configuration files. Provide them via environment variables instead. For example,
+you should provide `Config.DSN` using the `APP_DSN` environment variable. 
+
+## Deployment
+
+The application can be run as a docker container. You can use `make build-docker` to build the application 
+into a docker image.
+
+The docker container starts with the `cmd/server/entryscript.sh` script which uses the `APP_ENV` environment 
+variable to determine which configuration file to use. For example,  if `APP_ENV` is `qa`, the application will
+be started with the `config/qa.yml` configuration file.
