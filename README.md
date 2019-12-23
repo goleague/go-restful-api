@@ -1,7 +1,7 @@
 # Go RESTful API Starter Kit (Boilerplate)
 
 [![Build Status](https://github.com/qiangxue/go-restful-api/workflows/build/badge.svg)](https://github.com/goseal/go-restful-api/actions?query=workflow%3Abuild)
-[![Coverage Status](https://coveralls.io/repos/github/qiangxue/go-restful-api/badge.svg?branch=master)](https://coveralls.io/github/qiangxue/go-restful-api?branch=master)
+[![Code Coverage](https://codecov.io/gh/qiangxue/go-restful-api/branch/master/graph/badge.svg)](https://codecov.io/gh/qiangxue/go-restful-api)
 [![Go Report](https://goreportcard.com/badge/github.com/qiangxue/go-restful-api)](https://goreportcard.com/report/github.com/qiangxue/go-restful-api)
 
 This starter kit is designed to get you up and running with a project structure optimized for developing
