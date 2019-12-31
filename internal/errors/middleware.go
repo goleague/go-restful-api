@@ -14,24 +14,24 @@ import (
 func Handler(logger log.Logger) routing.Handler {
 	return func(c *routing.Context) (err error) {
 		defer func() {
-			logger = logger.With(c.Request.Context())
+			l := logger.With(c.Request.Context())
 			if e := recover(); e != nil {
 				var ok bool
 				if err, ok = e.(error); !ok {
 					err = fmt.Errorf("%v", e)
 				}
 
-				logger.Errorf("recovered from panic (%v): %s", err, debug.Stack())
+				l.Errorf("recovered from panic (%v): %s", err, debug.Stack())
 			}
 
 			if err != nil {
 				res := buildErrorResponse(err)
 				if res.StatusCode() == http.StatusInternalServerError {
-					logger.Errorf("encountered internal server error: %v", err)
+					l.Errorf("encountered internal server error: %v", err)
 				}
 				c.Response.WriteHeader(res.StatusCode())
 				if err = c.Write(res); err != nil {
-					logger.Errorf("failed writing error response: %v", err)
+					l.Errorf("failed writing error response: %v", err)
 				}
 				c.Abort() // skip any pending handlers since an error has occurred
 				err = nil // return nil because the error is already handled
