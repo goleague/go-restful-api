@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 )
 
@@ -103,7 +104,11 @@ func TestDB_TransactionHandler(t *testing.T) {
 }
 
 func runDBTest(t *testing.T, f func(db *dbx.DB)) {
-	db, err := dbx.MustOpen("postgres", DSN)
+	dsn, ok := os.LookupEnv("APP_DSN")
+	if !ok {
+		dsn = DSN
+	}
+	db, err := dbx.MustOpen("postgres", dsn)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
