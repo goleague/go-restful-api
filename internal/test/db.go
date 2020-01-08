@@ -4,16 +4,17 @@ import (
 	dbx "github.com/go-ozzo/ozzo-dbx"
 	_ "github.com/lib/pq" // initialize posgresql for test
 	"github.com/qiangxue/go-restful-api/internal/config"
+	"github.com/qiangxue/go-restful-api/pkg/dbcontext"
 	"github.com/qiangxue/go-restful-api/pkg/log"
 	"path"
 	"runtime"
 	"testing"
 )
 
-var db *dbx.DB
+var db *dbcontext.DB
 
 // DB returns the database connection for testing purpose.
-func DB(t *testing.T) *dbx.DB {
+func DB(t *testing.T) *dbcontext.DB {
 	if db != nil {
 		return db
 	}
@@ -24,19 +25,20 @@ func DB(t *testing.T) *dbx.DB {
 		t.Error(err)
 		t.FailNow()
 	}
-	db, err = dbx.MustOpen("postgres", cfg.DSN)
+	dbc, err := dbx.MustOpen("postgres", cfg.DSN)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	db.LogFunc = logger.Infof
+	dbc.LogFunc = logger.Infof
+	db = dbcontext.New(dbc)
 	return db
 }
 
 // ResetTables truncates all data in the specified tables.
-func ResetTables(t *testing.T, db *dbx.DB, tables ...string) {
+func ResetTables(t *testing.T, db *dbcontext.DB, tables ...string) {
 	for _, table := range tables {
-		_, err := db.TruncateTable(table).Execute()
+		_, err := db.DB().TruncateTable(table).Execute()
 		if err != nil {
 			t.Error(err)
 			t.FailNow()

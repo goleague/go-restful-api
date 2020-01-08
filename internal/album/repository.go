@@ -2,8 +2,8 @@ package album
 
 import (
 	"context"
-	dbx "github.com/go-ozzo/ozzo-dbx"
 	"github.com/qiangxue/go-restful-api/internal/entity"
+	"github.com/qiangxue/go-restful-api/pkg/dbcontext"
 	"github.com/qiangxue/go-restful-api/pkg/log"
 )
 
@@ -25,31 +25,31 @@ type Repository interface {
 
 // repository persists albums in database
 type repository struct {
-	db     *dbx.DB
+	db     *dbcontext.DB
 	logger log.Logger
 }
 
 // NewRepository creates a new album repository
-func NewRepository(db *dbx.DB, logger log.Logger) Repository {
+func NewRepository(db *dbcontext.DB, logger log.Logger) Repository {
 	return repository{db, logger}
 }
 
 // Get reads the album with the specified ID from the database.
 func (r repository) Get(ctx context.Context, id string) (entity.Album, error) {
 	var album entity.Album
-	err := r.db.Select().WithContext(ctx).Model(id, &album)
+	err := r.db.With(ctx).Select().Model(id, &album)
 	return album, err
 }
 
 // Create saves a new album record in the database.
 // It returns the ID of the newly inserted album record.
 func (r repository) Create(ctx context.Context, album entity.Album) error {
-	return r.db.Model(&album).WithContext(ctx).Insert()
+	return r.db.With(ctx).Model(&album).Insert()
 }
 
 // Update saves the changes to an album in the database.
 func (r repository) Update(ctx context.Context, album entity.Album) error {
-	return r.db.Model(&album).WithContext(ctx).Update()
+	return r.db.With(ctx).Model(&album).Update()
 }
 
 // Delete deletes an album with the specified ID from the database.
@@ -58,24 +58,24 @@ func (r repository) Delete(ctx context.Context, id string) error {
 	if err != nil {
 		return err
 	}
-	return r.db.Model(&album).WithContext(ctx).Delete()
+	return r.db.With(ctx).Model(&album).Delete()
 }
 
 // Count returns the number of the album records in the database.
 func (r repository) Count(ctx context.Context) (int, error) {
 	var count int
-	err := r.db.Select("COUNT(*)").From("album").WithContext(ctx).Row(&count)
+	err := r.db.With(ctx).Select("COUNT(*)").From("album").Row(&count)
 	return count, err
 }
 
 // Query retrieves the album records with the specified offset and limit from the database.
 func (r repository) Query(ctx context.Context, offset, limit int) ([]entity.Album, error) {
 	var albums []entity.Album
-	err := r.db.Select().
+	err := r.db.With(ctx).
+		Select().
 		OrderBy("id").
 		Offset(int64(offset)).
 		Limit(int64(limit)).
-		WithContext(ctx).
 		All(&albums)
 	return albums, err
 }

@@ -1,3 +1,4 @@
+// Package graceful provides graceful shutdown support for an HTTP server.
 package graceful
 
 import (

@@ -14,6 +14,7 @@ import (
 	"github.com/qiangxue/go-restful-api/internal/errors"
 	"github.com/qiangxue/go-restful-api/internal/healthcheck"
 	"github.com/qiangxue/go-restful-api/pkg/accesslog"
+	"github.com/qiangxue/go-restful-api/pkg/dbcontext"
 	"github.com/qiangxue/go-restful-api/pkg/graceful"
 	"github.com/qiangxue/go-restful-api/pkg/log"
 	"net/http"
@@ -56,7 +57,7 @@ func main() {
 	address := fmt.Sprintf(":%v", cfg.ServerPort)
 	hs := &http.Server{
 		Addr:    address,
-		Handler: buildHandler(logger, db, cfg),
+		Handler: buildHandler(logger, dbcontext.New(db), cfg),
 	}
 
 	// start the HTTP server with graceful shutdown
@@ -68,7 +69,7 @@ func main() {
 	}
 }
 
-func buildHandler(logger log.Logger, db *dbx.DB, cfg *config.Config) http.Handler {
+func buildHandler(logger log.Logger, db *dbcontext.DB, cfg *config.Config) http.Handler {
 	router := routing.New()
 
 	router.Use(

@@ -1,3 +1,4 @@
+// Package accesslog provides a middleware that records every RESTful API call in a log message.
 package accesslog
 
 import (

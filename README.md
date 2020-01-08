@@ -139,6 +139,31 @@ Implementing a new feature typically involves the following steps:
 4. Wire up the above components together by injecting their dependencies in the main function. Please refer to 
    the `album.RegisterHandlers()` call in `cmd/server/main.go`.
 
+### Working with DB Transactions
+
+It is the responsibility of the service layer to determine whether DB operations should be enclosed in a transaction.
+The DB operations implemented by the repository layer should work both with and without a transaction.
+
+You can use `dbcontext.DB.Transactional()` in a service method to enclose multiple repository method calls in
+a transaction. For example,
+
+```go
+func serviceMethod(ctx context.Context, repo Repository, transactional dbcontext.TransactionFunc) error {
+    return transactional(ctx, func(ctx context.Context) error {
+        repo.method1(...)
+        repo.method2(...)
+        return nil
+    })
+}
+```
+
+If needed, you can also enclose method calls of different repositories in a single transaction. The return value
+of the function in `transactional` above determines if the transaction should be committed or rolled back.
+
+You can also use `dbcontext.DB.TransactionHandler()` as a middleware to enclose a whole API handler in a transaction.
+This is especially useful if an API handler needs to put method calls of multiple services in a transaction.
+
+
 ### Updating Database Schema
 
 The starter kit uses [database migration](https://en.wikipedia.org/wiki/Schema_migration) to manage the changes of the 

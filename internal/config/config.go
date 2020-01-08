@@ -15,9 +15,9 @@ type Config struct {
 	// the data source name (DSN) for connecting to the database. required.
 	DSN string `yaml:"dsn" env:"DSN,secret"`
 	// JWT signing key. required.
-	JWTSigningKey string `yaml:"jwt_signing_key" env:"JWT_SIGNING_KEY"`
+	JWTSigningKey string `yaml:"jwt_signing_key" env:"JWT_SIGNING_KEY,secret"`
 	// JWT verification key. required.
-	JWTVerificationKey string `yaml:"jwt_verification_key" env:"JWT_VERIFICATION_KEY"`
+	JWTVerificationKey string `yaml:"jwt_verification_key" env:"JWT_VERIFICATION_KEY,secret"`
 	// JWT expiration in hours. Defaults to 72 hours (3 days)
 	JWTExpiration int `yaml:"jwt_expiration" env:"JWT_EXPIRATION"`
 }

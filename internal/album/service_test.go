@@ -3,11 +3,14 @@ package album
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"github.com/qiangxue/go-restful-api/internal/entity"
 	"github.com/qiangxue/go-restful-api/pkg/log"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
+
+var errCRUD = errors.New("error crud")
 
 func TestCreateAlbumRequest_Validate(t *testing.T) {
 	tests := []struct {
@@ -72,6 +75,12 @@ func Test_service_CRUD(t *testing.T) {
 	count, _ = s.Count(ctx)
 	assert.Equal(t, 1, count)
 
+	// unexpected error in creation
+	_, err = s.Create(ctx, CreateAlbumRequest{Name: "error"})
+	assert.Equal(t, errCRUD, err)
+	count, _ = s.Count(ctx)
+	assert.Equal(t, 1, count)
+
 	_, _ = s.Create(ctx, CreateAlbumRequest{Name: "test2"})
 
 	// update
@@ -80,6 +89,18 @@ func Test_service_CRUD(t *testing.T) {
 	assert.Equal(t, "test updated", album.Name)
 	_, err = s.Update(ctx, "none", UpdateAlbumRequest{Name: "test updated"})
 	assert.NotNil(t, err)
+
+	// validation error in update
+	_, err = s.Update(ctx, id, UpdateAlbumRequest{Name: ""})
+	assert.NotNil(t, err)
+	count, _ = s.Count(ctx)
+	assert.Equal(t, 2, count)
+
+	// unexpected error in update
+	_, err = s.Update(ctx, id, UpdateAlbumRequest{Name: "error"})
+	assert.Equal(t, errCRUD, err)
+	count, _ = s.Count(ctx)
+	assert.Equal(t, 2, count)
 
 	// get
 	_, err = s.Get(ctx, "none")
@@ -125,11 +146,17 @@ func (m mockRepository) Query(ctx context.Context, offset, limit int) ([]entity.
 }
 
 func (m *mockRepository) Create(ctx context.Context, album entity.Album) error {
+	if album.Name == "error" {
+		return errCRUD
+	}
 	m.items = append(m.items, album)
 	return nil
 }
 
 func (m *mockRepository) Update(ctx context.Context, album entity.Album) error {
+	if album.Name == "error" {
+		return errCRUD
+	}
 	for i, item := range m.items {
 		if item.ID == album.ID {
 			m.items[i] = album
