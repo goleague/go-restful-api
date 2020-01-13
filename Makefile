@@ -7,6 +7,9 @@ CONFIG_FILE ?= ./config/local.yml
 APP_DSN ?= $(shell sed -n 's/^dsn:[[:space:]]*"\(.*\)"/\1/p' $(CONFIG_FILE))
 MIGRATE := docker run -v $(shell pwd)/migrations:/migrations --network host migrate/migrate -path=/migrations/ -database "$(APP_DSN)"
 
+PID_FILE := './.pid'
+FSWATCH_FILE := './fswatch.cfg'
+
 .PHONY: default
 default: help
 
@@ -28,10 +31,21 @@ test-cover: test ## run unit tests and show test coverage information
 
 .PHONY: run
 run: ## run the API server
-	go run ${LDFLAGS} cmd/server/main.go
+	go run ${LDFLAGS} cmd/server/main.go & echo $$! > $(PID_FILE)
+
+.PHONY: run-restart
+run-restart:
+	@pkill -P `cat $(PID_FILE)` || true
+	@printf '%*s\n' "80" '' | tr ' ' -
+	@echo "Source file changed. Restarting server..."
+	@make run
+	@printf '%*s\n' "80" '' | tr ' ' -
+
+run-live: run ## run the API server with live reload support (requires fswatch)
+	@fswatch -x -o --event Created --event Updated --event Renamed -r internal pkg cmd config | xargs -n1 -I {} make run-restart
 
 .PHONY: build
-build: clean ## build the API server binary
+build:  ## build the API server binary
 	CGO_ENABLED=0 go build ${LDFLAGS} -a -o server $(MODULE)/cmd/server
 
 .PHONY: build-docker

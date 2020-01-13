@@ -21,17 +21,17 @@ The kit provides the following features right out of the box:
 * Database migration
 * Data validation
 * Full test coverage
+* Live reloading during development
  
 The kit uses the following Go packages which can be easily replaced with your own favorite ones
 since their usages are mostly localized and abstracted. 
 
-* Routing framework: [ozzo-routing](https://github.com/go-ozzo/ozzo-routing)
-* Database: [ozzo-dbx](https://github.com/go-ozzo/ozzo-dbx)
-* Data validation: [ozzo-validation](https://github.com/go-ozzo/ozzo-validation)
+* Routing: [ozzo-routing](https://github.com/go-ozzo/ozzo-routing)
+* Database access: [ozzo-dbx](https://github.com/go-ozzo/ozzo-dbx)
 * Database migration: [golang-migrate](https://github.com/golang-migrate/migrate)
+* Data validation: [ozzo-validation](https://github.com/go-ozzo/ozzo-validation)
 * Logging: [zap](https://github.com/uber-go/zap)
 * JWT: [jwt-go](https://github.com/dgrijalva/jwt-go)
-* Testing: [testify](https://github.com/stretchr/testify)
 
 ## Getting Started
 
@@ -57,6 +57,10 @@ make testdata
 
 # run the RESTful API server
 make run
+
+# or run the API server with live reloading, which is useful during development
+# requires fswatch (https://github.com/emcrisostomo/fswatch)
+make run-live
 ```
 
 At this time, you have a RESTful API server running at `http://127.0.0.1:8080`. It provides the following endpoints:
