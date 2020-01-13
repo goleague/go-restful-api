@@ -17,7 +17,6 @@ import (
 	"github.com/qiangxue/go-restful-api/internal/healthcheck"
 	"github.com/qiangxue/go-restful-api/pkg/accesslog"
 	"github.com/qiangxue/go-restful-api/pkg/dbcontext"
-	"github.com/qiangxue/go-restful-api/pkg/graceful"
 	"github.com/qiangxue/go-restful-api/pkg/log"
 	"net/http"
 	"os"
@@ -63,7 +62,7 @@ func main() {
 	}
 
 	// start the HTTP server with graceful shutdown
-	go graceful.Shutdown(hs, 10*time.Second, logger)
+	go routing.GracefulShutdown(hs, 10*time.Second, logger.Infof)
 	logger.Infof("server %v is running at %v", Version, address)
 	if err := hs.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		logger.Error(err)

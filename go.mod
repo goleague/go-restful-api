@@ -5,7 +5,7 @@ go 1.13
 require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-ozzo/ozzo-dbx v1.5.0
-	github.com/go-ozzo/ozzo-routing/v2 v2.2.0
+	github.com/go-ozzo/ozzo-routing/v2 v2.3.0
 	github.com/go-ozzo/ozzo-validation/v3 v3.8.1
 	github.com/google/uuid v1.1.1
 	github.com/lib/pq v1.2.0

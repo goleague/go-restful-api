@@ -63,8 +63,7 @@ func (r resource) create(c *routing.Context) error {
 		return err
 	}
 
-	c.Response.WriteHeader(http.StatusCreated)
-	return c.Write(album)
+	return c.WriteWithStatus(album, http.StatusCreated)
 }
 
 func (r resource) update(c *routing.Context) error {

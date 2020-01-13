@@ -38,7 +38,7 @@ run-stop: ## stop the API server
 	@pkill -P `cat $(PID_FILE)` || true
 
 .PHONY: run-restart
-run-restart:
+run-restart: ## restart the API server
 	@make run-stop
 	@printf '%*s\n' "80" '' | tr ' ' -
 	@echo "Source file changed. Restarting server..."
