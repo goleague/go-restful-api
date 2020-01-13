@@ -3,13 +3,11 @@ package log
 import (
 	"bytes"
 	"context"
-	"fmt"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
 	"net/http"
 	"reflect"
 	"testing"
-	"time"
 )
 
 func TestNew(t *testing.T) {
@@ -82,34 +80,4 @@ func TestNewForTest(t *testing.T) {
 	assert.Equal(t, 0, entries.Len())
 	logger.Info("msg 4")
 	assert.Equal(t, 1, entries.Len())
-}
-
-func TestDBQuery(t *testing.T) {
-	logger, entries := NewForTest()
-	f := DBQuery(logger)
-	f(context.Background(), time.Millisecond*3, "sql", nil, nil)
-	if assert.Equal(t, 1, entries.Len()) {
-		assert.Equal(t, "DB query successful", entries.All()[0].Message)
-	}
-	entries.TakeAll()
-
-	f(context.Background(), time.Millisecond*3, "sql", nil, fmt.Errorf("test"))
-	if assert.Equal(t, 1, entries.Len()) {
-		assert.Equal(t, "DB query error: test", entries.All()[0].Message)
-	}
-}
-
-func TestDBExec(t *testing.T) {
-	logger, entries := NewForTest()
-	f := DBExec(logger)
-	f(context.Background(), time.Millisecond*3, "sql", nil, nil)
-	if assert.Equal(t, 1, entries.Len()) {
-		assert.Equal(t, "DB execution successful", entries.All()[0].Message)
-	}
-	entries.TakeAll()
-
-	f(context.Background(), time.Millisecond*3, "sql", nil, fmt.Errorf("test"))
-	if assert.Equal(t, 1, entries.Len()) {
-		assert.Equal(t, "DB execution error: test", entries.All()[0].Message)
-	}
 }

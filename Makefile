@@ -1,6 +1,6 @@
 MODULE = $(shell go list -m)
 VERSION ?= $(shell git describe --tags --always --dirty --match=v* 2> /dev/null || echo "1.0.0")
-PACKAGES := $(shell go list ./... | sed -n '1!p' | grep -v /vendor/)
+PACKAGES := $(shell go list ./... | grep -v /vendor/)
 LDFLAGS := -ldflags "-X main.Version=${VERSION}"
 
 CONFIG_FILE ?= ./config/local.yml
@@ -33,9 +33,13 @@ test-cover: test ## run unit tests and show test coverage information
 run: ## run the API server
 	go run ${LDFLAGS} cmd/server/main.go & echo $$! > $(PID_FILE)
 
+.PHONY: run-stop
+run-stop: ## stop the API server
+	@pkill -P `cat $(PID_FILE)` || true
+
 .PHONY: run-restart
 run-restart:
-	@pkill -P `cat $(PID_FILE)` || true
+	@make run-stop
 	@printf '%*s\n' "80" '' | tr ' ' -
 	@echo "Source file changed. Restarting server..."
 	@make run

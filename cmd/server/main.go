@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+	"database/sql"
 	"flag"
 	"fmt"
 	"github.com/go-ozzo/ozzo-dbx"
@@ -45,8 +47,8 @@ func main() {
 		logger.Error(err)
 		os.Exit(-1)
 	}
-	db.QueryLogFunc = log.DBQuery(logger)
-	db.ExecLogFunc = log.DBExec(logger)
+	db.QueryLogFunc = logDBQuery(logger)
+	db.ExecLogFunc = logDBExec(logger)
 	defer func() {
 		if err := db.Close(); err != nil {
 			logger.Error(err)
@@ -69,6 +71,7 @@ func main() {
 	}
 }
 
+// buildHandler sets up the HTTP routing and builds an HTTP handler.
 func buildHandler(logger log.Logger, db *dbcontext.DB, cfg *config.Config) http.Handler {
 	router := routing.New()
 
@@ -96,4 +99,26 @@ func buildHandler(logger log.Logger, db *dbcontext.DB, cfg *config.Config) http.
 	)
 
 	return router
+}
+
+// logDBQuery returns a logging function that can be used to log SQL queries.
+func logDBQuery(logger log.Logger) dbx.QueryLogFunc {
+	return func(ctx context.Context, t time.Duration, sql string, rows *sql.Rows, err error) {
+		if err == nil {
+			logger.With(ctx, "duration", t.Milliseconds(), "sql", sql).Info("DB query successful")
+		} else {
+			logger.With(ctx, "sql", sql).Errorf("DB query error: %v", err)
+		}
+	}
+}
+
+// logDBExec returns a logging function that can be used to log SQL executions.
+func logDBExec(logger log.Logger) dbx.ExecLogFunc {
+	return func(ctx context.Context, t time.Duration, sql string, result sql.Result, err error) {
+		if err == nil {
+			logger.With(ctx, "duration", t.Milliseconds(), "sql", sql).Info("DB execution successful")
+		} else {
+			logger.With(ctx, "sql", sql).Errorf("DB execution error: %v", err)
+		}
+	}
 }
