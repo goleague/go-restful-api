@@ -36,10 +36,10 @@ since their usages are mostly localized and abstracted.
 ## Getting Started
 
 If this is your first time encountering Go, please follow [the instructions](https://golang.org/doc/install) to
-install Go on your computer. The kit requires Go 1.13 or above.
+install Go on your computer. The kit requires **Go 1.13 or above**.
 
 [Docker](https://www.docker.com/get-started) is also needed if you want to try the kit without setting up your
-own database server.
+own database server. The kit requires **Docker 17.05 or higher** for the multi-stage build support.
 
 After installing Go and Docker, run the following commands to start experiencing this starter kit:
 
@@ -215,6 +215,6 @@ storage (e.g. HashiCorp Vault) into environment variables in a bootstrap script 
 The application can be run as a docker container. You can use `make build-docker` to build the application 
 into a docker image.
 
-The docker container starts with the `cmd/server/entryscript.sh` script which uses the `APP_ENV` environment 
+The docker container starts with the `cmd/server/entryscript.sh` script which reads the `APP_ENV` environment 
 variable to determine which configuration file to use. For example,  if `APP_ENV` is `qa`, the application will
 be started with the `config/qa.yml` configuration file.
