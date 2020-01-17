@@ -3,8 +3,8 @@ services:
   server:
     image: server
     build:
-      context: .
-      dockerfile: cmd/server/Dockerfile
+      context: ..
+      dockerfile: deploy/Dockerfile
     volumes:
       - /tmp/app:/var/log/app
     ports:
