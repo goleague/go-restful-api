@@ -1,7 +1,7 @@
 package config
 
 import (
-	validation "github.com/go-ozzo/ozzo-validation/v3"
+	"github.com/go-ozzo/ozzo-validation/v3"
 	"github.com/qiangxue/go-env"
 	"github.com/qiangxue/go-restful-api/pkg/log"
 	"gopkg.in/yaml.v2"
