@@ -2,6 +2,7 @@ package errors
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	routing "github.com/go-ozzo/ozzo-routing/v2"
 	validation "github.com/go-ozzo/ozzo-validation/v3"
@@ -58,10 +59,10 @@ func buildErrorResponse(err error) ErrorResponse {
 				Message: err.Error(),
 			}
 		}
-	default:
-		if err == sql.ErrNoRows {
-			return NotFound("")
-		}
-		return InternalServerError("")
 	}
+
+	if errors.Is(err, sql.ErrNoRows) {
+		return NotFound("")
+	}
+	return InternalServerError("")
 }
